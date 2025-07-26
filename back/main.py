@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from search_service import SearchService
 from summary_service import SummaryService
@@ -17,23 +17,85 @@ search_service = SearchService()
 summary_service = SummaryService()
 process_service = ProcessService()
 
+# Global variable to store session data
+session_data = {
+    "search_results": None,
+    "search_summary": None,
+    "search_query": None
+}
+
 @app.post("/search")
 async def search(query: dict):
-    # First search for content
-    content = await search_service.search_content(query["query"])
+    """
+    Phase 1: Search for content and store in session
+    """
+    search_query = query.get("query")
+    if not search_query:
+        raise HTTPException(status_code=400, detail="Query is required")
     
-    # Then summarize the content
+    # Search for content
+    content = await search_service.search_content(search_query)
+    
+    # Summarize the content 
     summary = await summary_service.summarize_content(content)
-
-    # Process content if instruction is provided
-    result = None
-    if "instruction" in query and query["instruction"]:
-        result = await process_service.process(content, query["instruction"])
+    
+    # Store in session
+    session_data["search_results"] = content
+    session_data["search_summary"] = summary
+    session_data["search_query"] = search_query
     
     return {
-        "response": summary,
-        "result": result
+        "message": "Search completed and data stored in session",
+        "query": search_query,
+        "summary": summary,
+        "results_count": len(content) if isinstance(content, list) else 1
     }
+
+@app.post("/instruct")
+async def instruct(instruction: dict):
+    """
+    Phase 2: Process stored search data with instructions
+    """
+    instruction_text = instruction.get("instruction")
+    if not instruction_text:
+        raise HTTPException(status_code=400, detail="Instruction is required")
+    
+    if not session_data["search_results"]:
+        raise HTTPException(status_code=400, detail="No search data found. Please search first.")
+    
+    # Process the stored content with the instruction
+    result = await process_service.process(session_data["search_results"], instruction_text)
+    
+    return {
+        "instruction": instruction_text,
+        "result": result,
+        "original_query": session_data["search_query"]
+    }
+
+@app.get("/session/status")
+async def get_session_status():
+    """
+    Get current session status
+    """
+    has_data = session_data["search_results"] is not None
+    return {
+        "has_search_data": has_data,
+        "search_query": session_data["search_query"] if has_data else None,
+        "results_count": len(session_data["search_results"]) if has_data and isinstance(session_data["search_results"], list) else (1 if has_data else 0)
+    }
+
+@app.post("/session/clear")
+async def clear_session():
+    """
+    Clear session data
+    """
+    global session_data
+    session_data = {
+        "search_results": None,
+        "search_summary": None,
+        "search_query": None
+    }
+    return {"message": "Session cleared"}
 
 if __name__ == "__main__":
     import uvicorn
