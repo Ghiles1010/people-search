@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { SearchIcon, Users, FileText, Sparkles, Zap, TrendingUp, RefreshCw, ArrowRight, Send, MessageSquare } from "lucide-react";
+import { SearchIcon, Users, FileText, Sparkles, Zap, TrendingUp, RefreshCw, ArrowRight, Send, MessageSquare, Download } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useToast } from "@/hooks/use-toast";
 
@@ -477,8 +477,19 @@ Just type your instructions below!`,
                         </p>
                       </div>
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      Updated {new Date().toLocaleTimeString()}
+                    <div className="flex items-center gap-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2"
+                        disabled={searchResults.length === 0}
+                      >
+                        <Download className="h-4 w-4" />
+                        Export CSV
+                      </Button>
+                      <div className="text-xs text-muted-foreground">
+                        Updated {new Date().toLocaleTimeString()}
+                      </div>
                     </div>
                   </div>
                 </CardHeader>
