@@ -91,13 +91,17 @@ const PeopleSearch = () => {
     }
 
     setIsSearching(true);
+    console.log('🔍 Starting search for:', query.trim());
     
     try {
       // Clear any existing session data first
+      console.log('🧹 Clearing session...');
       await fetch('http://localhost:8001/session/clear', {
         method: 'POST',
       });
+      console.log('✅ Session cleared');
 
+      console.log('🚀 Making search request...');
       const response = await fetch('http://localhost:8001/search', {
         method: 'POST',
         headers: {
@@ -108,14 +112,21 @@ const PeopleSearch = () => {
         }),
       });
 
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response headers:', response.headers);
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      console.log('📥 Parsing response...');
       const data: SearchResponse = await response.json();
+      console.log('📊 Received data:', data);
       
       // Parse profiles from the summary
+      console.log('🔄 Parsing profiles...');
       const profiles = parseProfilesFromSummary(data.summary);
+      console.log('👥 Parsed profiles:', profiles);
       setSearchResults(profiles);
       
       // Update session status
@@ -149,7 +160,8 @@ Just type your instructions below!`,
       });
       
     } catch (error) {
-      console.error('Search error:', error);
+      console.error('❌ Search error:', error);
+      console.error('❌ Error stack:', error instanceof Error ? error.stack : 'No stack');
       toast({
         title: "Search Failed",
         description: error instanceof Error ? error.message : "Failed to connect to search API.",
@@ -157,6 +169,7 @@ Just type your instructions below!`,
       });
     } finally {
       setIsSearching(false);
+      console.log('🏁 Search process completed');
     }
   };
 
