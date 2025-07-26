@@ -1,6 +1,6 @@
-# 🚀 People Search AI
+# 🚀 Synaps
 
-> AI-powered people search application with real-time results and custom processing
+> AI-powered professional search and analysis platform with real-time results and intelligent filtering
 
 A full-stack application that searches for people using **Exa.ai** and provides intelligent summaries and custom processing with **Claude AI**.
 

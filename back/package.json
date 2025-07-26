@@ -1,7 +1,7 @@
 {
   "name": "people-search-ai",
   "version": "1.0.0",
-  "description": "AI-powered people search application with FastAPI backend and React frontend",
+  "description": "Synaps - AI-powered professional search and analysis platform with FastAPI backend",
   "private": true,
   "workspaces": [
     "frontend",

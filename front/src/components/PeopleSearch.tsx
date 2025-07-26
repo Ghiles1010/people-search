@@ -367,7 +367,7 @@ Just type your instructions below!`,
               </div>
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                  People Search AI
+                  Synaps
                 </h1>
                 <p className="text-sm text-muted-foreground">
                   {isSearchPhase ? "Search for people" : `Results for: "${sessionStatus?.search_query}"`}
