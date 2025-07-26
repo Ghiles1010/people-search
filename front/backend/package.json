@@ -1,0 +1,49 @@
+{
+  "name": "people-search-ai",
+  "version": "1.0.0",
+  "description": "AI-powered people search application with FastAPI backend and React frontend",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && python3 -m uvicorn main:app --host 0.0.0.0 --port 8001 --reload",
+    "dev:frontend": "cd frontend && npm run dev",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && pip install -r requirements.txt",
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && pip install -r requirements.txt",
+    "build": "cd frontend && npm run build",
+    "test": "npm run test:frontend",
+    "test:frontend": "cd frontend && npm test",
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "cd backend && python3 -m uvicorn main:app --host 0.0.0.0 --port 8001",
+    "start:frontend": "cd frontend && npm run preview",
+    "cleanup": "rm -rf frontend/node_modules backend/__pycache__ backend/*.pyc"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "python": ">=3.10.0"
+  },
+  "keywords": [
+    "ai",
+    "search",
+    "people",
+    "fastapi",
+    "react",
+    "typescript",
+    "exa",
+    "claude",
+    "anthropic"
+  ],
+  "author": "Ghiles Djebara",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-username/people-search-ai.git"
+  }
+} 
