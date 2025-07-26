@@ -64,7 +64,21 @@ const PeopleSearch = () => {
     scrollToBottom();
   }, [chatMessages]);
 
-  // No longer check session status on mount - always start fresh
+  // Clear session on page load/reload
+  useEffect(() => {
+    const clearSessionOnLoad = async () => {
+      try {
+        await fetch('http://localhost:8001/session/clear', {
+          method: 'POST',
+        });
+        console.log('Session cleared on page load');
+      } catch (error) {
+        console.error('Error clearing session on load:', error);
+      }
+    };
+    
+    clearSessionOnLoad();
+  }, []); // Empty dependency array means this runs only once when component mounts
 
   const handleSearch = async () => {
     if (!query.trim()) {
