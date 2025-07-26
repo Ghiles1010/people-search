@@ -30,7 +30,10 @@ interface SearchResponse {
 
 interface InstructResponse {
   instruction: string;
-  result: string;
+  chat_response: string;
+  filtered_results: any[];
+  results_modified: boolean;
+  results_count: number;
   original_query: string;
 }
 
@@ -208,15 +211,39 @@ Just type your instructions below!`,
       }
 
       const data: InstructResponse = await response.json();
+      console.log('🤖 Instruction response:', data);
       
       // Add assistant response to chat
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
-        content: data.result,
+        content: data.chat_response,
         timestamp: new Date()
       };
       setChatMessages(prev => [...prev, assistantMessage]);
+      
+      // Update search results if modified
+      if (data.results_modified && data.filtered_results) {
+        console.log('🔄 Updating search results with filtered data');
+        // Convert filtered results to PersonProfile format
+        const updatedProfiles = data.filtered_results.map((item: any, index: number) => ({
+          fullName: item.full_name || `Person ${index + 1}`,
+          description: item.description || "No description available",
+          score: 85 + Math.floor(Math.random() * 15)
+        }));
+        
+        setSearchResults(updatedProfiles);
+        setSessionStatus({
+          has_search_data: true,
+          search_query: data.original_query,
+          results_count: data.results_count
+        });
+        
+        toast({
+          title: "✨ Results Filtered",
+          description: `Search results updated! Now showing ${data.results_count} of the original results.`,
+        });
+      }
       
     } catch (error) {
       console.error('Instruction error:', error);

@@ -66,9 +66,21 @@ async def instruct(instruction: dict):
     # Process the stored content with the instruction
     result = await process_service.process(session_data["search_results"], instruction_text)
     
+    # Update stored search results if they were modified
+    if result.get("results_modified", False) and result.get("filtered_results"):
+        session_data["search_results"] = result["filtered_results"]
+        session_data["search_summary"] = None  # Clear old summary since data changed
+        
+        # Update results count
+        previous_count = len(session_data["search_results"]) if session_data["search_results"] else 0
+        print(f"Search results updated: {previous_count} -> {len(result['filtered_results'])} items")
+    
     return {
         "instruction": instruction_text,
-        "result": result,
+        "chat_response": result.get("chat_response", ""),
+        "filtered_results": result.get("filtered_results", []),
+        "results_modified": result.get("results_modified", False),
+        "results_count": len(result.get("filtered_results", [])),
         "original_query": session_data["search_query"]
     }
 
